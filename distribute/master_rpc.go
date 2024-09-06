@@ -6,7 +6,6 @@ import (
 	"net"
 	"net/rpc"
 	"os"
-
 )
 
 func (mr *Master) startPRCServer() {
@@ -18,12 +17,12 @@ func (mr *Master) startPRCServer() {
 		log.Fatalf("RegisterServer %s error: %v!\n", mr.address, err)
 	}
 	mr.listener = listener
-	go func ()  {
-		loop:
+	go func() {
+	loop:
 		for {
 			// 检测是否接收到中断
 			select {
-			case <- mr.shutdown:
+			case <-mr.shutdown:
 				break loop
 			default:
 
@@ -34,7 +33,7 @@ func (mr *Master) startPRCServer() {
 				break
 			} else {
 				// ???
-				go func () {
+				go func() {
 					rpcs.ServeConn(conn)
 					conn.Close()
 				}()
@@ -45,7 +44,7 @@ func (mr *Master) startPRCServer() {
 }
 
 // 紧急中断
-func (mr *Master) ShutDown(_, _*struct{}) error {
+func (mr *Master) ShutDown(_, _ *struct{}) error {
 	log.Fatalf("Shutdown: registration server\n")
 	close(mr.shutdown)
 	mr.listener.Close()
